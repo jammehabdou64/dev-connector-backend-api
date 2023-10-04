@@ -83,7 +83,7 @@ class AuthRequest extends FormRequest {
     // }
     const user = await User.findById(this.req.id);
     const match = await verifyHash(this.oldPassword, user.password);
-    return console.log(match);
+
     if (!match) {
       return throwException({ oldPassword: "Incorrect password" });
     }

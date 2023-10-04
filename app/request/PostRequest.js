@@ -11,7 +11,7 @@ class PostRequest extends FormRequest {
 
   async save() {
     const post = new Post();
-    const { title, text, image, video } = this.request();
+    const { title, text } = this.request();
     if (!title && !text && !this.req.files) {
       return throwException({ post: "provide atleast one field" });
     }
@@ -20,7 +20,7 @@ class PostRequest extends FormRequest {
     post.title = title;
     post.text = text;
 
-    if (this.req.files["image"]) {
+    if (this.req.files) {
       post.image = this.req.files
         ? `${process.env.HOST}${PORT}/posts/${saveImage(
             this.req,
@@ -30,15 +30,15 @@ class PostRequest extends FormRequest {
         : post.image;
     }
 
-    if (this.req.files["video"]) {
-      post.video = this.req.files
-        ? `${process.env.HOST}${PORT}/posts/${saveImage(
-            this.req,
-            "video",
-            "video/posts"
-          )}`
-        : post.video;
-    }
+    // if (this.req.files["video"]) {
+    //   post.video = this.req.files
+    //     ? `${process.env.HOST}${PORT}/posts/${saveImage(
+    //         this.req,
+    //         "video",
+    //         "video/posts"
+    //       )}`
+    //     : post.video;
+    // }
 
     return post.save();
   }
@@ -62,13 +62,14 @@ class PostRequest extends FormRequest {
         .populate("author", ["name", "eamil", "avatar"])
         .sort({ createdAt: "-1" });
     }
+    const myId = this.req.id;
     const { name, id, avatar } = this.request();
     const newLike = { name, id, avatar };
     post.likes.unshift({ user: newLike });
 
-    // console.log({ author: post.author, user: id });
+    // console.log({ author: post.author, user: myId });
 
-    if (post.author.toString() !== id) {
+    if (post.author.toString() !== myId) {
       await Notification.create({
         post: this.route("post"),
         from: id,
