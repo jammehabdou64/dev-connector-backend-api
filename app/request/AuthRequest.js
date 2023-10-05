@@ -78,12 +78,8 @@ class AuthRequest extends FormRequest {
       confirmPassword: ["required", "same:newPassword"],
     });
 
-    // if (this.newPassword != this.confirmPassword) {
-    //   return throwException({ confirmPassword: "Password did not mach" });
-    // }
-    const user = await User.findById(this.req.id);
+    const user = await User.findById(this.req.id).select("+password");
     const match = await verifyHash(this.oldPassword, user.password);
-
     if (!match) {
       return throwException({ oldPassword: "Incorrect password" });
     }

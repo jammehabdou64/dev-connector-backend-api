@@ -41,6 +41,16 @@ class FriendRequestsController {
       ? res.json({ message: "Friend request sent", success: true })
       : res.json({ message: "An error occur", success: false }).status(400);
   }
+
+  async destroy(req, res, next) {
+    const removeRequest = await FriendRequest.findByIdAndRemove(
+      req.params?.removeId
+    );
+
+    return removeRequest
+      ? res.json({ message: "Request removed successfully" })
+      : res.json({ message: "Sorry, an error occur" });
+  }
 }
 
 module.exports = new FriendRequestsController();
