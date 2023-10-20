@@ -7,6 +7,7 @@ class ProfilesController {
       "name",
       "email",
       "avatar",
+      "location",
     ]);
     return profile
       ? res.json({ message: profile, success: true })
@@ -22,30 +23,47 @@ class ProfilesController {
   }
 
   async getAuthProfile(req, res, next) {
-    const profile = await Profile.findOne({ user: req.id }).populate({
-      path: "user",
-      populate: {
-        path: "friends",
-      },
-    });
+    const profile = await Profile.findOne({ user: req.id }).populate("user", [
+      "name",
+      "email",
+      "avatar",
+      "location",
+    ]);
     return profile
       ? res.json({ message: profile, success: true })
       : res.json({
-          message: await User.findById(req.id)
-            .select("name email avatar friends")
-            .populate("friends", ["name", "email", "avatar"]),
+          message: await User.findById(req.id).select(
+            "name email avatar location"
+          ),
           success: true,
         });
   }
 
   async show(req, res, next) {
     const profile = await Profile.findOne({
-      user: req.params.profile,
-    }).populate("user", ["name", "email", "avatar", "friends"]);
+      user: req.id,
+    }).populate("user", ["name", "email", "avatar", "location"]);
     return profile
       ? res.json({ message: profile, success: true })
       : res.json({
-          message: await User.findById(req.params.profile),
+          message: "Profile not found",
+          success: null,
+        });
+  }
+
+  async edit(req, res, next) {
+    const profile = await Profile.findOne({
+      user: req.params.profile,
+    }).populate("user", ["name", "email", "avatar", "location"]);
+    return profile
+      ? res.json({ message: profile, success: true })
+      : res.json({
+          message: await User.findById(req.params.profile).select([
+            "name",
+            "email",
+            "avatar",
+            "location",
+          ]),
           success: null,
         });
   }

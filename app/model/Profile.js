@@ -8,11 +8,6 @@ const ProfileSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "User",
     },
-    // handle: {
-    //   type: String,
-    //   required: true,
-    //   max: 40,
-    // },
     company: {
       type: String,
     },
@@ -33,7 +28,7 @@ const ProfileSchema = new Schema(
     bio: {
       type: String,
     },
-    githubusername: {
+    githubUsername: {
       type: String,
     },
     experience: [
