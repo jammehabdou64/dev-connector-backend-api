@@ -3,10 +3,18 @@ const FormRequest = require("../../helper/formRequest");
 const { saveImage } = require("../../utils");
 const Post = require("../model/Post");
 const Notification = require("../model/Notification");
+const path = require("path");
 
 class PostRequest extends FormRequest {
   constructor(req) {
     super(req);
+  }
+
+  checkIfImage(files) {
+    const extensions = [".svg", ".jpeg", ".jpg", ".png", ".webp"];
+    const fileExtension = path.extname(files?.image?.name).toLocaleLowerCase();
+
+    return extensions.includes(fileExtension);
   }
 
   async save() {
@@ -20,7 +28,9 @@ class PostRequest extends FormRequest {
     post.title = title;
     post.text = text;
 
-    if (this.req.files) {
+    // return console.log(this.checkIfImage(this.req.files))
+
+    if (this.checkIfImage(this.req.files)) {
       post.image = this.req.files
         ? `${process.env.HOST}${PORT}/posts/${saveImage(
             this.req,
@@ -30,15 +40,15 @@ class PostRequest extends FormRequest {
         : post.image;
     }
 
-    // if (this.req.files["video"]) {
-    //   post.video = this.req.files
-    //     ? `${process.env.HOST}${PORT}/posts/${saveImage(
-    //         this.req,
-    //         "video",
-    //         "video/posts"
-    //       )}`
-    //     : post.video;
-    // }
+    if (!this.checkIfImage(this.req.files)) {
+      post.video = this.req.files
+        ? `${process.env.HOST}${PORT}/posts/${saveImage(
+            this.req,
+            "image",
+            "video/posts"
+          )}`
+        : post.video;
+    }
 
     return post.save();
   }

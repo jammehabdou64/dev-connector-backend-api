@@ -20,9 +20,11 @@ exports.jwtVerify = (token) => jwt.verify(token, process.env.JWT_SECRET);
 
 exports.saveImage = (req, fieldName, filePath = "image") => {
   let file = req.files[fieldName];
-  const name = file.name.split(".")[0];
+  const name = file?.name?.split(".")[0];
   const randomNum = Math.floor(Math.random() * 1000);
-  const extension = path.extname(req.files[fieldName].name).toLocaleLowerCase();
+  const extension = path
+    .extname(req.files[fieldName]?.name)
+    .toLocaleLowerCase();
   const fileName = `${name}-${randomNum + extension}`.replace(/\s/g, "-");
   file.mv(
     `${require("app-root-path").path}/public/${filePath}/${fileName}`,
