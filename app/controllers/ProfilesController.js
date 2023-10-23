@@ -117,6 +117,32 @@ class ProfilesController {
     await User.findByIdAndRemove({ _id: req.id });
     return res.json({ message: "Account deleted successfully", success: true });
   }
+
+  async githubUser(req, res, next) {
+    const params = req.params;
+    if (params?.user) {
+      const options = {
+        uri: `https://api.github.com/users/${params?.user}/repos?per_pages=5&sort=created:asc&client_id=${process.env.GITHUB_CLIENT_ID}&client_secret=${GITHUB_CLIENT_SECRET}`,
+        method: "GET",
+        headers: { "user-agent": "node-js" },
+      };
+
+        request(options, (err, response, body) => {
+          if (err) console.error(err);
+          if (response.statusCode !== 200) {
+            return res.json({
+              message: "No Github Profile found",
+              success: false,
+            });
+          }
+
+          return res.json({ message: JSON.parse(body), success: true });
+        });
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 module.exports = new ProfilesController();
