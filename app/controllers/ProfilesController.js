@@ -1,5 +1,6 @@
 const Profile = require("../model/Profile");
 const User = require("../model/User");
+const request = require("request");
 const ProfileRequest = require("../request/ProfileRequest");
 class ProfilesController {
   async index(req, res, next) {
@@ -119,13 +120,14 @@ class ProfilesController {
   }
 
   async githubUser(req, res, next) {
-    const params = req.params;
-    if (params?.user) {
-      const options = {
-        uri: `https://api.github.com/users/${params?.user}/repos?per_pages=5&sort=created:asc&client_id=${process.env.GITHUB_CLIENT_ID}&client_secret=${GITHUB_CLIENT_SECRET}`,
-        method: "GET",
-        headers: { "user-agent": "node-js" },
-      };
+    try {
+      const params = req.params;
+      if (params?.user) {
+        const options = {
+          uri: `https://api.github.com/users/${params?.user}/repos?per_page=7&sort=created:asc&client_id=${process.env.GITHUB_CLIENT_ID}&client_secret=${process.env.GITHUB_CLIENT_SECRET}`,
+          method: "GET",
+          headers: { "user-agent": "node-js" },
+        };
 
         request(options, (err, response, body) => {
           if (err) console.error(err);

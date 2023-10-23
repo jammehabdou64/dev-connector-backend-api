@@ -25,11 +25,11 @@ class ProfileRequest extends FormRequest {
       status,
       githubUsername,
       skills,
-      youtube,
-      facebook,
-      twitter,
-      instagram,
-      linkedin,
+      // youtube,
+      // facebook,
+      // twitter,
+      // instagram,
+      // linkedin,
     } = this.request();
 
     const profieFields = {};
@@ -46,11 +46,11 @@ class ProfileRequest extends FormRequest {
 
     profieFields.social = {};
 
-    if (youtube) profieFields.youtube = profieFields.social.youtube;
-    if (twitter) profieFields.twitter = profieFields.social.twitter;
-    if (facebook) profieFields.facebook = profieFields.social.facebook;
-    if (instagram) profieFields.instagram = profieFields.social.instagram;
-    if (linkedin) profieFields.linkedin = profieFields.social.linkedin;
+    // if (youtube) profieFields.youtube = profieFields.social.youtube;
+    // if (twitter) profieFields.twitter = profieFields.social.twitter;
+    // if (facebook) profieFields.facebook = profieFields.social.facebook;
+    // if (instagram) profieFields.instagram = profieFields.social.instagram;
+    // if (linkedin) profieFields.linkedin = profieFields.social.linkedin;
 
     let profile = await Profile.findOne({ user: this.req.id });
 
