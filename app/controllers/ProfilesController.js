@@ -124,14 +124,18 @@ class ProfilesController {
       const params = req.params;
       if (params?.user) {
         const options = {
-          uri: `https://api.github.com/users/${params?.user}/repos?per_page=7&sort=created:asc&client_id=${process.env.GITHUB_CLIENT_ID}&client_secret=${process.env.GITHUB_CLIENT_SECRET}`,
+          uri: `https://api.github.com/users/${params?.user}/repos?per_page=8&sort=created:asc&client_id=${process.env.GITHUB_CLIENT_ID}&client_secret=${process.env.GITHUB_CLIENT_SECRET}`,
           method: "GET",
           headers: { "user-agent": "node-js" },
         };
 
         request(options, (err, response, body) => {
-          if (err) console.error(err);
-          if (response.statusCode !== 200) {
+          if (err) {
+            return res.json({
+              message: "Please check your internet connection",
+            });
+          }
+          if (response?.statusCode !== 200) {
             return res.json({
               message: "No Github Profile found",
               success: false,
