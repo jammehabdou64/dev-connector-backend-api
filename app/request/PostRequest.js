@@ -32,7 +32,7 @@ class PostRequest extends FormRequest {
 
     if (this.checkIfImage(this.req.files)) {
       post.image = this.req.files
-        ? `${process.env.HOST}${PORT}/posts/${saveImage(
+        ? `${process.env.HOST}/posts/${saveImage(
             this.req,
             "image",
             "image/posts"
@@ -42,7 +42,7 @@ class PostRequest extends FormRequest {
 
     if (!this.checkIfImage(this.req.files)) {
       post.video = this.req.files
-        ? `${process.env.HOST}${PORT}/posts/${saveImage(
+        ? `${process.env.HOST}/posts/${saveImage(
             this.req,
             "image",
             "video/posts"

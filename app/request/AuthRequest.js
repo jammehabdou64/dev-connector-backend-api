@@ -30,12 +30,12 @@ class AuthRequest extends FormRequest {
     user.password = await bcrypt(this.password);
     user.role = this.role || "user";
     user.avatar = this.req.files
-      ? `${process.env.HOST}${process.env.PORT}/users/${saveImage(
+      ? `${process.env.HOST}/users/${saveImage(
           this.req,
           "avatar",
           "image/users"
         )}`
-      : `${process.env.HOST}${process.env.PORT}/users/default.png`;
+      : `${process.env.HOST}/users/default.png`;
 
     const registerUser = await user.save();
     return jwtSign(registerUser._id.toString());
@@ -62,7 +62,7 @@ class AuthRequest extends FormRequest {
     }
 
     const user = await User.findById(this.req.id);
-    user.avatar = `${process.env.HOST}${process.env.PORT}/users/${saveImage(
+    user.avatar = `${process.env.HOST}/users/${saveImage(
       this.req,
       "profile",
       "image/users"
