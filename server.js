@@ -1,4 +1,3 @@
-const http = require("http");
 const express = require("express");
 const dotenv = require("dotenv");
 const hpp = require("hpp");
@@ -8,7 +7,7 @@ const fileUpload = require("express-fileupload");
 const mongooseSanitize = require("express-mongo-sanitize");
 const root = require("app-root-path");
 const cors = require("cors");
-const { Server } = require("socket.io");
+const path = require("path");
 
 const db = require("./db/index");
 const errorMsg = require("./errorHandler/ErrorHandler");
@@ -57,6 +56,16 @@ app.use("/api/notifications", auth, notificationRoute);
 app.use("/api/messages", auth, messageRoute);
 app.use("/api/friend-request", auth, friendRequestRoute);
 app.use("/api/friends", auth, friendRoute);
+
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static("client/build"));
+
+  app.get("*", (req, res) => {
+    return res.sendFile(
+      path.resolve(__dirname, "client", "build", "index.html")
+    );
+  });
+}
 
 const appErr = new errorMsg(app);
 app.use(appErr.handler);
