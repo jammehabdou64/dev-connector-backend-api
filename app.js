@@ -57,16 +57,6 @@ app.use("/api/messages", auth, messageRoute);
 app.use("/api/friend-request", auth, friendRequestRoute);
 app.use("/api/friends", auth, friendRoute);
 
-// if (process.env.NODE_ENV === "production") {
-//   app.use(express.static("client/build"));
-
-//   app.get("*", (req, res) => {
-//     return res.sendFile(
-//       path.resolve(__dirname, "client", "build", "index.html")
-//     );
-//   });
-// }
-
 const appErr = new errorMsg(app);
 app.use(appErr.handler);
 
