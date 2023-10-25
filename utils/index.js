@@ -3,6 +3,7 @@ const getRootPath = require("app-root-path").path;
 const path = require("path");
 const jwt = require("jsonwebtoken");
 const { throwException } = require("../errorHandler/throwException");
+const cloudinary = require("./cloudinary");
 
 //
 exports.bcrypt = async (data) => {
@@ -27,7 +28,11 @@ exports.saveImage = (req, fieldName, filePath = "image") => {
     .toLocaleLowerCase();
   const fileName = `${name}-${randomNum + extension}`.replace(/\s/g, "-");
   file.mv(
-    `${require("app-root-path").path}/public/${filePath}/${fileName}`,
+    // `${require("app-root-path").path}/public/${filePath}/${fileName}`,
+    cloudinary.uploader.upload(fileName, (err, result) => {
+      if (err) return false;
+      if (result) return true;
+    }),
     (err) => {
       if (err) {
         return false;

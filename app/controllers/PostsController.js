@@ -12,11 +12,10 @@ class PostsController {
   async store(req, res, next) {
     const postRequest = new PostRequest(req);
     const save = await postRequest.save();
-    const result = await Post.findById(save._id.toString()).populate("author", [
-      "name",
-      "eamil",
-      "avatar",
-    ]);
+    const result = await Post.findById(save?._id.toString()).populate(
+      "author",
+      ["name", "eamil", "avatar"]
+    );
     return res.json({ message: result, success: true });
   }
 

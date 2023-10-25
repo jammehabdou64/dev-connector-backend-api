@@ -3,7 +3,7 @@ const dotenv = require("dotenv");
 const hpp = require("hpp");
 const xss = require("xss-clean");
 const helmet = require("helmet");
-const fileUpload = require("express-fileupload");
+// const fileUpload = require("express-fileupload");
 const mongooseSanitize = require("express-mongo-sanitize");
 const root = require("app-root-path");
 const cors = require("cors");
@@ -31,6 +31,7 @@ const {
 const { asyncHandler } = require("./utils");
 const friendRoute = require("./routes/friend");
 const { index } = require("./app/controllers/SearchController");
+const upload = require("./utils/multer");
 //middleware
 // app.use(express.static("public"));
 app.use(express.json());
@@ -41,17 +42,24 @@ app.use(cors());
 app.use(hpp());
 app.use(xss());
 app.use(helmet());
-app.use(fileUpload());
+// app.use(fileUpload());
+// app.use(upload.single("image"));
+// app.use(upload.single("avatar"));
 app.use(mongooseSanitize());
 
 //routes
-app.put("/api/auth/change-profile", auth, asyncHandler(changeProfile));
+app.put(
+  "/api/auth/change-profile",
+  upload.single("profile"),
+  auth,
+  asyncHandler(changeProfile)
+);
 app.put("/api/auth/change-password", auth, asyncHandler(changePassword));
 app.get("/api/search", auth, asyncHandler(index));
 app.use("/api/auth", authRoute);
 app.use("/api/users", auth, userRoute);
 app.use("/api/profile", auth, profileRoute);
-app.use("/api/posts", auth, postRoute);
+app.use("/api/posts", upload.single("image"), auth, postRoute);
 app.use("/api/notifications", auth, notificationRoute);
 app.use("/api/messages", auth, messageRoute);
 app.use("/api/friend-request", auth, friendRequestRoute);

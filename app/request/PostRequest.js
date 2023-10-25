@@ -1,18 +1,18 @@
 const { throwException } = require("../../errorHandler/throwException");
 const FormRequest = require("../../helper/formRequest");
-const { saveImage } = require("../../utils");
 const Post = require("../model/Post");
 const Notification = require("../model/Notification");
 const path = require("path");
+const cloudinaryUpload = require("../../utils/cloudinary");
 
 class PostRequest extends FormRequest {
   constructor(req) {
     super(req);
   }
 
-  checkIfImage(files) {
+  checkIfImage(filename) {
     const extensions = [".svg", ".jpeg", ".jpg", ".png", ".webp"];
-    const fileExtension = path.extname(files?.image?.name).toLocaleLowerCase();
+    const fileExtension = path.extname(filename).toLocaleLowerCase();
 
     return extensions.includes(fileExtension);
   }
@@ -20,34 +20,29 @@ class PostRequest extends FormRequest {
   async save() {
     const post = new Post();
     const { title, text } = this.request();
-    if (!title && !text && !this.req.files) {
+    if (!title && !text && !this.req.file) {
       return throwException({ post: "provide atleast one field" });
     }
-    const PORT = process.env.PORT || process.env.NODE_ENV;
     post.author = this.req.id;
     post.title = title;
     post.text = text;
 
-    // return console.log(this.checkIfImage(this.req.files))
-
-    if (this.checkIfImage(this.req.files)) {
-      post.image = this.req.files
-        ? `${process.env.HOST}/posts/${saveImage(
-            this.req,
-            "image",
-            "image/posts"
-          )}`
-        : post.image;
+    if (this.checkIfImage(this.req.file?.filename)) {
+      if (this.req.file) {
+        const result = await cloudinaryUpload(this.req?.file?.path);
+        post.image = result?.url;
+      } else {
+        post.image = post.image;
+      }
     }
 
-    if (!this.checkIfImage(this.req.files)) {
-      post.video = this.req.files
-        ? `${process.env.HOST}/posts/${saveImage(
-            this.req,
-            "image",
-            "video/posts"
-          )}`
-        : post.video;
+    if (!this.checkIfImage(this.req.file?.filename)) {
+      if (this.req.file) {
+        const result = await cloudinaryUpload(this.req?.file?.path);
+        post.video = result?.url;
+      } else {
+        post.video = post.video;
+      }
     }
 
     return post.save();
@@ -77,8 +72,7 @@ class PostRequest extends FormRequest {
     const newLike = { name, id, avatar };
     post.likes.unshift({ user: newLike });
 
-    // console.log({ author: post.author, user: myId });
-
+    //
     if (post.author.toString() !== myId) {
       await Notification.create({
         post: this.route("post"),

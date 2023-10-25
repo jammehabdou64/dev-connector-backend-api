@@ -2,6 +2,7 @@ const FormRequest = require("../../helper/formRequest");
 const User = require("../model/User");
 const { bcrypt, saveImage, verifyHash, jwtSign } = require("../../utils");
 const { throwException } = require("../../errorHandler/throwException");
+const cloudinaryUpload = require("../../utils/cloudinary");
 
 class AuthRequest extends FormRequest {
   async rules() {
@@ -57,17 +58,14 @@ class AuthRequest extends FormRequest {
   }
 
   async changeProfile() {
-    if (!this.req.files) {
+    if (!this.req.file) {
       return throwException({ profile: "Profile image is required" });
     }
 
     const user = await User.findById(this.req.id);
-    user.avatar = `${process.env.HOST}/users/${saveImage(
-      this.req,
-      "profile",
-      "image/users"
-    )}`;
 
+    const result = await cloudinaryUpload(this.req.file?.path);
+    user.avatar = result?.url;
     return user.save();
   }
 
